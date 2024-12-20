@@ -19,7 +19,7 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Логин' })
   @ApiResponse({ status: 201, type: User })
-  @Post('register')
+  @Post('login')
   @ApiBody({ type: LoginDto })
   async login(@Body() dto: LoginDto) {
     return this.authService.login(dto);

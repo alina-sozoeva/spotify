@@ -8,7 +8,7 @@ export enum Gender {
 }
 
 export class CreateUserDto {
-  @ApiProperty({ example: 'email@gmail.com', description: 'Почта' })
+  @ApiProperty({ example: 'ryan.gosling@gmail.com', description: 'Почта' })
   @IsString()
   email: string;
 
@@ -16,15 +16,15 @@ export class CreateUserDto {
   @IsString()
   password: string;
 
-  @ApiProperty({ example: 'name', description: 'Имя пользователя' })
+  @ApiProperty({ example: 'Ryan', description: 'Имя пользователя' })
   @IsString()
   username: string;
 
-  @ApiProperty({ example: 'name', description: 'Дата рождения' })
+  @ApiProperty({ example: '1980-11-12', description: 'Дата рождения' })
   @IsDateString()
   birthDate: string;
 
-  @ApiProperty({ example: 'name', description: 'Пол пользователя' })
+  @ApiProperty({ example: 'male', description: 'Пол пользователя' })
   @IsString()
   gender: Gender;
 
