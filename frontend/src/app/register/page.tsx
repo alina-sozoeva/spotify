@@ -1,20 +1,42 @@
 "use client";
 
-import { Button, Form, Input, Radio, Steps } from "antd";
+import { Button, Form, Input, Steps } from "antd";
 import Image from "next/image";
 import AuthButtons from "../components/AuthButtons/page";
 import { useState } from "react";
+import { useRegisterUserMutation } from "../store/register/register.api";
 
 export default function Register() {
   const [form] = Form.useForm();
   const [isStepMode, setIsStepMode] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [formValues, setFormValues] = useState({});
 
-  const options = [
-    { label: "Apple", value: "Apple" },
-    { label: "Pear", value: "Pear" },
-    { label: "Orange", value: "Orange" },
-  ];
+  // console.log(values.email, values);
+
+  const [register] = useRegisterUserMutation({});
+
+  const values = form.getFieldsValue();
+
+  console.log(values, "values");
+
+  console.log(values.email, "valuesemail");
+
+  const onFinish = () => {
+    register({
+      email: values.email,
+      password: values.password,
+      username: values.username,
+      birthDate: values.birthDate,
+      gender: values.gender,
+    });
+  };
+
+  // const options = [
+  //   { label: "Apple", value: "Apple" },
+  //   { label: "Pear", value: "Pear" },
+  //   { label: "Orange", value: "Orange" },
+  // ];
 
   const steps = [
     {
@@ -105,7 +127,11 @@ export default function Register() {
             //   },
             // ]}
           >
-            <Radio.Group block options={options} defaultValue="Apple" />
+            <Input
+              variant={"borderless"}
+              className="w-full border border-solid border-gray-400 text-gray-400 placeholder-gray-400"
+              placeholder="gender"
+            />
           </Form.Item>
         </>
       ),
@@ -121,9 +147,13 @@ export default function Register() {
   const handleNext = () => {
     if (!isStepMode) {
       form
-        .validateFields(["email"])
-        .then(() => {
+        .validateFields()
+        .then((values) => {
+          setFormValues({ ...formValues, ...values }); // Сохраняем текущие значения
           setIsStepMode(true);
+          if (currentStep < steps.length - 1) {
+            setCurrentStep(currentStep + 1);
+          }
         })
         .catch(() => {});
     } else {
@@ -133,14 +163,13 @@ export default function Register() {
     }
   };
 
-  const handlePrev = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
+  console.log(currentStep, "currentStep");
 
-  const onFinish = () => {
-    console.log("wefewf");
+  const handlePrev = () => {
+    if (currentStep === 0) {
+    }
+
+    setCurrentStep(currentStep - 1);
   };
 
   return (
@@ -202,7 +231,7 @@ export default function Register() {
           </div>
         )}
 
-        {currentStep !== 3 ? (
+        {currentStep !== 2 ? (
           <Button type="primary" onClick={handleNext}>
             Next
           </Button>

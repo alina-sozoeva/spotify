@@ -14,11 +14,11 @@ export class User {
   @Column()
   username: string;
 
-  @Column()
+  @Column('timestamp')
   birthDate: Date;
 
   @Column()
-  gender: Date;
+  gender: string;
 
   @Column({ default: false })
   isEmailConfirmed: boolean;

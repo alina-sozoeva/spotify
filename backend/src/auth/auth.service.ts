@@ -7,7 +7,38 @@ import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
+  private readonly accessTokenSecret = 'your_secret_key';
+  private readonly refreshTokenSecret = 'your_refresh_secret_key';
+
   constructor(private readonly usersService: UsersService) {}
+
+  private generateAccessToken(userId: number): string {
+    return jwt.sign({ userId }, this.accessTokenSecret, { expiresIn: '15m' });
+  }
+
+  private generateRefreshToken(userId: number): string {
+    return jwt.sign({ userId }, this.refreshTokenSecret, { expiresIn: '7d' });
+  }
+
+  async refreshToken(refreshToken: string): Promise<any> {
+    try {
+      const decoded = jwt.verify(refreshToken, this.refreshTokenSecret) as {
+        userId: number;
+      };
+
+      const user = await this.usersService.findById(decoded.userId);
+
+      if (!user) {
+        throw new BadRequestException('Invalid refresh token');
+      }
+
+      const newAccessToken = this.generateAccessToken(user.id);
+
+      return { accessToken: newAccessToken };
+    } catch (error) {
+      throw new BadRequestException('Invalid or expired refresh token');
+    }
+  }
 
   async register(createUserDto: CreateUserDto): Promise<any> {
     const { email, password, username, birthDate, gender } = createUserDto;
@@ -27,13 +58,10 @@ export class AuthService {
       gender,
     });
 
-    const token = this.generateJwtToken(newUser.id);
+    const accessToken = this.generateAccessToken(newUser.id);
+    const refreshToken = this.generateRefreshToken(newUser.id);
 
-    return { message: 'Registration successful', token };
-  }
-
-  private generateJwtToken(userId: number): string {
-    return jwt.sign({ userId }, 'your_secret_key', { expiresIn: '1h' });
+    return { message: 'Registration successful', accessToken, refreshToken };
   }
 
   async login(loginDto: LoginDto): Promise<any> {
@@ -50,7 +78,9 @@ export class AuthService {
       throw new BadRequestException('Invalid credentials');
     }
 
-    const token = this.generateJwtToken(user.id);
-    return { message: 'Login successful', token };
+    const accessToken = this.generateAccessToken(user.id);
+    const refreshToken = this.generateRefreshToken(user.id);
+
+    return { message: 'Registration successful', accessToken, refreshToken };
   }
 }

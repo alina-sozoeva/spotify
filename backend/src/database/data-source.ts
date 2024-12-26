@@ -9,6 +9,6 @@ export const AppDataSource = new DataSource({
   password: '',
   database: 'spotify',
   entities: [join(__dirname, '..', '**', '*.entity.{ts,js}')],
-  //   migrations: [join(__dirname, '..', 'migrations', '*.{ts,js}')],
+  migrations: [join(__dirname, '..', 'migrations', '*.{ts,js}')],
   synchronize: false,
 });
