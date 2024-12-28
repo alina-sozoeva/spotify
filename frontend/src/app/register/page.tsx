@@ -1,42 +1,94 @@
 "use client";
 
-import { Button, Form, Input, Steps } from "antd";
+import { Button, Checkbox, CheckboxProps, Form, Input, Steps } from "antd";
 import Image from "next/image";
 import AuthButtons from "../components/AuthButtons/page";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRegisterUserMutation } from "../store/register/register.api";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Register() {
   const [form] = Form.useForm();
   const [isStepMode, setIsStepMode] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [formValues, setFormValues] = useState({});
-
-  // console.log(values.email, values);
-
   const [register] = useRegisterUserMutation({});
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const step = searchParams.get("step") || "0";
 
-  const values = form.getFieldsValue();
-
-  console.log(values, "values");
-
-  console.log(values.email, "valuesemail");
+  const email = form.getFieldValue("email");
+  const password = form.getFieldValue("password");
+  const username = form.getFieldValue("username");
+  const birthDate = form.getFieldValue("birthDate");
+  const gender = form.getFieldValue("gender");
 
   const onFinish = () => {
     register({
-      email: values.email,
-      password: values.password,
-      username: values.username,
-      birthDate: values.birthDate,
-      gender: values.gender,
+      email: email,
+      password: password,
+      username: username,
+      birthDate: birthDate,
+      gender: gender,
     });
   };
 
-  // const options = [
-  //   { label: "Apple", value: "Apple" },
-  //   { label: "Pear", value: "Pear" },
-  //   { label: "Orange", value: "Orange" },
-  // ];
+  const onChange: CheckboxProps["onChange"] = (e) => {
+    console.log(`checked = ${e.target.checked}`);
+  };
+
+  const handleStepNext = () => {
+    const next = +step + 1;
+    router.push(`/register?step=${next}`);
+  };
+
+  const handleNext = () => {
+    if (!isStepMode) {
+      form
+        .validateFields(["email"])
+        .then(() => {
+          const email = form.getFieldValue("email");
+
+          setIsStepMode(true);
+
+          form.setFieldsValue({ email });
+          handleStepNext();
+        })
+        .catch(() => {
+          console.log("Email validation failed");
+        });
+    } else {
+      if (currentStep < steps.length - 1) {
+        setCurrentStep(currentStep + 1);
+        handleStepNext();
+      }
+    }
+  };
+
+  const hadleStepPrev = () => {
+    let next = +step - 1;
+    if (next < 0) {
+      next = 0;
+    }
+    router.push(`/register?step=${next}`);
+
+    if (next === 0) {
+      setIsStepMode(false);
+      router.push(`/register`);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+    hadleStepPrev();
+  };
+
+  useEffect(() => {
+    if (!isStepMode) {
+      router.push("/register");
+    }
+  }, [isStepMode, router]);
 
   const steps = [
     {
@@ -138,39 +190,13 @@ export default function Register() {
     },
     {
       title: "Step-3",
-      // content: (
-
-      // ),
+      content: (
+        <>
+          <Checkbox onChange={onChange}>Checkbox</Checkbox>
+        </>
+      ),
     },
   ];
-
-  const handleNext = () => {
-    if (!isStepMode) {
-      form
-        .validateFields()
-        .then((values) => {
-          setFormValues({ ...formValues, ...values }); // Сохраняем текущие значения
-          setIsStepMode(true);
-          if (currentStep < steps.length - 1) {
-            setCurrentStep(currentStep + 1);
-          }
-        })
-        .catch(() => {});
-    } else {
-      if (currentStep < steps.length - 1) {
-        setCurrentStep(currentStep + 1);
-      }
-    }
-  };
-
-  console.log(currentStep, "currentStep");
-
-  const handlePrev = () => {
-    if (currentStep === 0) {
-    }
-
-    setCurrentStep(currentStep - 1);
-  };
 
   return (
     <section className=" flex flex-col justify-center items-center h-screen gap-6">
