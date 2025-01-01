@@ -7,6 +7,13 @@ import { User } from './entities/user.entity';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({ summary: 'Все пользователи' })
+  @ApiResponse({ status: 201, type: User })
+  @Get()
+  async getAllUsers() {
+    return this.usersService.getAllUsers();
+  }
+
   @ApiOperation({ summary: 'Пользователь по id' })
   @ApiResponse({ status: 201, type: User })
   @Get(':id')

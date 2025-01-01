@@ -3,7 +3,7 @@ import { ILoginUser, IRegisterUser, IUser } from "./register.type";
 
 export const usersApi = createApi({
   reducerPath: "/articles",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5555" }),
+  baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL }),
   tagTypes: ["UsersList"],
   endpoints: (builder) => ({
     registerUser: builder.mutation<IUser, IRegisterUser>({

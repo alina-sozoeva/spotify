@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsString } from 'class-validator';
+import { IsDateString, IsEmail, IsEnum, IsString } from 'class-validator';
 
 export enum Gender {
   Male = 'male',
@@ -9,7 +9,7 @@ export enum Gender {
 
 export class CreateUserDto {
   @ApiProperty({ example: 'ryan.gosling@gmail.com', description: 'Почта' })
-  @IsString()
+  @IsEmail()
   email: string;
 
   @ApiProperty({ example: 'password', description: 'Пароль' })
@@ -21,11 +21,11 @@ export class CreateUserDto {
   username: string;
 
   @ApiProperty({ example: '1980-11-12', description: 'Дата рождения' })
-  @IsDateString()
+  @IsDateString({ strict: true })
   birthDate: string;
 
   @ApiProperty({ example: 'male', description: 'Пол пользователя' })
-  @IsString()
+  @IsEnum(Gender)
   gender: Gender;
 
   //   @ApiProperty({ example: 'name', description: 'Пол пользователя' })

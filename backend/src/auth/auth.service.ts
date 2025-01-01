@@ -49,12 +49,15 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const formattedBirthDate = new Date(createUserDto.birthDate)
+      .toISOString()
+      .split('T')[0];
 
     const newUser = await this.usersService.create({
       email,
       password: hashedPassword,
       username,
-      birthDate,
+      birthDate: formattedBirthDate,
       gender,
     });
 
