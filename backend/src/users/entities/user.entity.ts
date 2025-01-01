@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Gender } from '../dto/create-user.dto';
 
 @Entity('users')
 export class User {
@@ -17,8 +18,11 @@ export class User {
   @Column('timestamp')
   birthDate: Date;
 
-  @Column()
-  gender: string;
+  @Column({
+    type: 'enum',
+    enum: Gender,
+  })
+  gender: Gender;
 
   @Column({ default: false })
   isEmailConfirmed: boolean;

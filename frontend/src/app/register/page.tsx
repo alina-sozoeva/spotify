@@ -30,6 +30,8 @@ export default function Register() {
       birthDate: birthDate,
       gender: gender,
     });
+
+    router.push("/");
   };
 
   const onChange: CheckboxProps["onChange"] = (e) => {
@@ -47,9 +49,7 @@ export default function Register() {
         .validateFields(["email"])
         .then(() => {
           const email = form.getFieldValue("email");
-
           setIsStepMode(true);
-
           form.setFieldsValue({ email });
           handleStepNext();
         })
@@ -89,6 +89,8 @@ export default function Register() {
       router.push("/register");
     }
   }, [isStepMode, router]);
+
+  console.log(currentStep, "currentStep");
 
   const steps = [
     {
